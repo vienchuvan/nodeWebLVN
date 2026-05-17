@@ -7,7 +7,7 @@ const homeController = require('../controller/homeController');
 router.get('/', homeController.home);
 //menu
 router.get('/menu', homeController.menu)
-router.get('/add-menu', homeController.addMenu)
+router.get('/set-menu', homeController.setMenu)
 
 // route about
 router.get('/about', homeController.about);
