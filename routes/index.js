@@ -8,7 +8,7 @@ router.get('/', homeController.home);
 //menu
 router.get('/menu', homeController.menu)
 router.get('/set-menu', homeController.setMenu)
-
+router.get('/set-banner', homeController.bannerHome)
 // route about
 router.get('/about', homeController.about);
 
