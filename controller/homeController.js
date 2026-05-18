@@ -19,6 +19,17 @@ exports.menu = async (req, res) => {
     });
   }
 }
+exports.langMenu = async (req, res) => {
+  try {
+    const [rows] = await db.query( 'SELECT * FROM languages_menu'  );
+    res.json(rows);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      error: err.message
+    });
+  }
+}
 exports.setMenu = async (req, res) => {
   try {
 
@@ -83,6 +94,8 @@ exports.setMenu = async (req, res) => {
 exports.bannerHome = async (req, res) => {
   try {
     const { idFun, id, title, desc, img } = req.body;
+    console.log("req banner ", req.body);
+    
     /**
      * 111 = ADD
      */
@@ -173,7 +186,68 @@ exports.bannerHome = async (req, res) => {
   }
 
 };
+exports.getSidebarMenu = async (req, res) => {
+  try {
+    // lấy category
+    const [categories] = await db.query(`
+      SELECT *
+      FROM sidebar_categories
+      ORDER BY id ASC
+    `);
 
+    // lấy item
+    const [items] = await db.query(`
+      SELECT *
+      FROM sidebar_items
+      ORDER BY id ASC
+    `);
+
+    // lấy sub item
+    const [subItems] = await db.query(`
+      SELECT *
+      FROM sidebar_subitems
+      ORDER BY id ASC
+    `);
+
+    // build data
+    const result = categories.map((category) => {
+      const categoryItems = items
+        .filter((item) => item.category_id === category.id)
+        .map((item) => {
+          const itemSub = subItems
+            .filter((sub) => sub.item_id === item.id)
+            .map((sub) => ({
+              title: sub.title,
+              id: sub.item_key,
+            }));
+
+          return {
+            title: item.title,
+            id: item.item_key,
+            subItems: itemSub,
+          };
+        });
+
+      return {
+        category: category.category_name,
+        items: categoryItems,
+      };
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    console.error("GET SIDEBAR ERROR:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
+    });
+  }
+};
 exports.about = (req, res) => {
   res.send('Trang giới thiệu');
 };
