@@ -17,4 +17,8 @@ router.get('/about', homeController.about);
 // route api
 router.get('/api/users', homeController.users);
 
+
+router.post('/quantri/contacts', require('../controller/contact').contactController);
+router.post('/quantri/baiviet', require('../controller/quantribaiviet').articleController);
+
 module.exports = router;
