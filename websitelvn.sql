@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 18, 2026 lúc 05:26 PM
+-- Thời gian đã tạo: Th5 21, 2026 lúc 02:09 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -20,6 +20,67 @@ SET time_zone = "+00:00";
 --
 -- Cơ sở dữ liệu: `websitelvn`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `articles`
+--
+
+CREATE TABLE `articles` (
+  `id` int(11) NOT NULL,
+  `cate` enum('home','service','training','news') NOT NULL DEFAULT 'news',
+  `title_vi` varchar(500) NOT NULL,
+  `title_en` varchar(500) DEFAULT NULL,
+  `title_jp` varchar(500) DEFAULT NULL,
+  `desc_vi` text DEFAULT NULL,
+  `desc_en` text DEFAULT NULL,
+  `desc_jp` text DEFAULT NULL,
+  `content_vi` longtext DEFAULT NULL,
+  `content_en` longtext DEFAULT NULL,
+  `content_jp` longtext DEFAULT NULL,
+  `thumbnail` text DEFAULT NULL,
+  `views` int(11) DEFAULT 0,
+  `status` enum('draft','published') DEFAULT 'draft',
+  `publish_date` date DEFAULT NULL,
+  `slug` varchar(500) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `articles`
+--
+
+INSERT INTO `articles` (`id`, `cate`, `title_vi`, `title_en`, `title_jp`, `desc_vi`, `desc_en`, `desc_jp`, `content_vi`, `content_en`, `content_jp`, `thumbnail`, `views`, `status`, `publish_date`, `slug`, `created_at`, `updated_at`) VALUES
+(1, 'service', 'Dịch vụ thành lập doanh nghiệp FDI', 'FDI Company Establishment Service', 'FDI会社設立サービス', 'Hỗ trợ tư vấn và thành lập doanh nghiệp FDI tại Việt Nam', 'Consulting and establishment support for FDI companies in Vietnam', 'ベトナムにおけるFDI会社設立支援', '<div><h1>Nội dung tiếng Việt</h1></div>', '<div><h1>English Content</h1></div>', '<div><h1>日本語コンテンツ</h1></div>', 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=100&q=80&auto=format&fit=crop', 120, 'published', '2026-05-19', 'dich-vu-thanh-lap-doanh-nghiep-fdi', '2026-05-19 15:10:08', '2026-05-19 15:10:08'),
+(2, 'service', 'Về LE VIET NAM', '', '', 'Đối tác tin cậy vững bước thành công cùng doanh nghiệp.', '', '', 'Câu Chuyện Của Chúng Tôi\nLE VIET NAM được thành lập với tâm huyết trở thành cầu nối vững chắc, đưa các nhà đầu tư quốc tế đến với thị trường Việt Nam đầy tiềm năng, đồng thời hỗ trợ các doanh nghiệp trong nước xây dựng nền móng pháp lý vững chắc.\n\nChúng tôi hiểu rằng, rào cản về thủ tục hành chính, pháp lý và sự khác biệt văn hóa luôn là những thách thức lớn đối với doanh nghiệp. Với đội ngũ chuyên gia, luật sư và cố vấn giàu kinh nghiệm, LE VIET NAM cam kết mang đến những giải pháp tư vấn toàn diện, chính xác và hiệu quả nhất.\n\nTầm Nhìn\nTrở thành đơn vị tư vấn chiến lược và cung cấp dịch vụ pháp lý hàng đầu tại Việt Nam, là điểm đến đầu tiên mà các nhà đầu tư quốc tế nghĩ tới khi quyết định thâm nhập thị trường Việt Nam.\n\nSứ Mệnh\nĐơn giản hóa mọi thủ tục pháp lý phức tạp, tối ưu hóa thời gian và chi phí cho khách hàng. Nâng tầm năng lực nhân sự Việt thông qua các chương trình đào tạo chuẩn quốc tế.\n\nGiá Trị Cốt Lõi\n01\nChuyên Nghiệp\nAm hiểu luật pháp, xử lý hồ sơ nhanh chóng, chính xác.\n\n02\nTận Tâm\nLuôn đặt lợi ích của khách hàng lên hàng đầu, đồng hành trọn đời.\n\n03\nBảo Mật\nCam kết bảo mật tuyệt đối mọi thông tin của doanh nghiệp và đối tác.', '', '', '', 0, 'draft', '2026-05-20', 've-le-viet-nam', '2026-05-20 15:55:21', '2026-05-20 15:55:21');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `contacts`
+--
+
+CREATE TABLE `contacts` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `phone` varchar(50) NOT NULL,
+  `service` varchar(255) NOT NULL,
+  `note` text DEFAULT NULL,
+  `contact_date` date DEFAULT NULL,
+  `status` enum('new','contacted','completed') DEFAULT 'new',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `contacts`
+--
+
+INSERT INTO `contacts` (`id`, `name`, `phone`, `service`, `note`, `contact_date`, `status`, `created_at`) VALUES
+(1, 'Nguyễn Văn A', '0901234567', 'Thành lập doanh nghiệp', 'Cần tư vấn mở công ty FDI', '2024-05-15', 'new', '2026-05-19 14:51:22'),
+(2, 'John Doe', '+123456789', 'Visa', 'Need work permit renewal', '2024-05-14', 'contacted', '2026-05-19 14:51:22'),
+(3, 'Tanaka Sato', '0987654321', 'Tư vấn xúc tiến đầu tư', '工場を設立したい', '2024-05-12', 'completed', '2026-05-19 14:51:22');
 
 -- --------------------------------------------------------
 
@@ -244,6 +305,19 @@ INSERT INTO `sidebar_subitems` (`id`, `item_id`, `title`, `item_key`, `created_a
 --
 
 --
+-- Chỉ mục cho bảng `articles`
+--
+ALTER TABLE `articles`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `slug` (`slug`);
+
+--
+-- Chỉ mục cho bảng `contacts`
+--
+ALTER TABLE `contacts`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Chỉ mục cho bảng `home_banners`
 --
 ALTER TABLE `home_banners`
@@ -296,6 +370,18 @@ ALTER TABLE `sidebar_subitems`
 --
 -- AUTO_INCREMENT cho các bảng đã đổ
 --
+
+--
+-- AUTO_INCREMENT cho bảng `articles`
+--
+ALTER TABLE `articles`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT cho bảng `contacts`
+--
+ALTER TABLE `contacts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `languages_menu`
