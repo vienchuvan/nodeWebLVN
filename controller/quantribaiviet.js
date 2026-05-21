@@ -1,8 +1,47 @@
-const express = require('express');
-const db = require('../connectDB')
+// controllers/articleController.js
+
+const express = require("express");
+const db = require("../connectDB");
+
+const multer = require("multer");
+const sharp = require("sharp");
+
+const path = require("path");
+const fs = require("fs");
+
 const app = express();
 
-app.use(express.json());
+// body limit
+app.use(express.json({ limit: "50mb" }));
+
+app.use(
+  express.urlencoded({
+    limit: "50mb",
+    extended: true,
+  })
+);
+
+// public uploads
+app.use(
+  "/uploads",
+  express.static("uploads")
+);
+
+// create uploads folder
+if (!fs.existsSync("uploads")) {
+  fs.mkdirSync("uploads");
+}
+
+// multer memory storage
+const storage = multer.memoryStorage();
+
+const upload = multer({
+  storage,
+
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB
+  },
+});
 
 /**
  * idFun
@@ -13,243 +52,313 @@ app.use(express.json());
  * 115 = GET DETAIL
  */
 
-exports.articleController = async (req, res) => {
-  try {
-    const {
-      idFun,
+exports.articleController = [
+  upload.single("thumbnail"),
 
-      id,
-      cate,
+  async (req, res) => {
+    try {
+      const {
+        idFun,
 
-      title_vi,
-      title_en,
-      title_jp,
+        id,
+        cate,
 
-      desc_vi,
-      desc_en,
-      desc_jp,
+        title_vi,
+        title_en,
+        title_jp,
 
-      content_vi,
-      content_en,
-      content_jp,
+        desc_vi,
+        desc_en,
+        desc_jp,
 
-      thumbnail,
-      views,
-      status,
-      publish_date,
-      slug,
-    } = req.body;
+        content_vi,
+        content_en,
+        content_jp,
 
-    /**
-     * 111 = ADD
-     */
-    if (idFun == 111) {
-      const [result] = await db.query(
-        `
-        INSERT INTO articles (
-          cate,
+        views,
+        status,
+        publish_date,
+        slug,
+      } = req.body;
 
-          title_vi,
-          title_en,
-          title_jp,
+      /**
+       * 111 = ADD
+       */
+      if (idFun == 111) {
+        let thumbnail = "";
 
-          desc_vi,
-          desc_en,
-          desc_jp,
+        // compress + save image
+        if (req.file) {
+          const fileName =
+            Date.now() + ".jpg";
 
-          content_vi,
-          content_en,
-          content_jp,
+          const outputPath = path.join(
+            __dirname,
+            "../uploads",
+            fileName
+          );
 
+          await sharp(req.file.buffer)
+            .resize(1200)
+            .jpeg({
+              quality: 70,
+            })
+            .toFile(outputPath);
+
+          thumbnail = `/uploads/${fileName}`;
+        }
+
+        const [result] = await db.query(
+          `
+          INSERT INTO articles (
+            cate,
+
+            title_vi,
+            title_en,
+            title_jp,
+
+            desc_vi,
+            desc_en,
+            desc_jp,
+
+            content_vi,
+            content_en,
+            content_jp,
+
+            thumbnail,
+            views,
+            status,
+            publish_date,
+            slug
+          )
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `,
+          [
+            cate,
+
+            title_vi,
+            title_en,
+            title_jp,
+
+            desc_vi,
+            desc_en,
+            desc_jp,
+
+            content_vi,
+            content_en,
+            content_jp,
+
+            thumbnail,
+            views || 0,
+            status || "draft",
+            publish_date,
+            slug,
+          ]
+        );
+
+        return res.status(200).json({
+          success: true,
+          message: "Add article success",
+          insertId: result.insertId,
           thumbnail,
-          views,
-          status,
-          publish_date,
-          slug
-        )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `,
-        [
-          cate,
-
-          title_vi,
-          title_en,
-          title_jp,
-
-          desc_vi,
-          desc_en,
-          desc_jp,
-
-          content_vi,
-          content_en,
-          content_jp,
-
-          thumbnail,
-          views || 0,
-          status || "draft",
-          publish_date,
-          slug,
-        ]
-      );
-
-      return res.status(200).json({
-        success: true,
-        message: "Add article success",
-        insertId: result.insertId,
-      });
-    }
-
-    /**
-     * 112 = UPDATE
-     */
-    if (idFun == 112) {
-      await db.query(
-        `
-        UPDATE articles
-        SET
-          cate = ?,
-
-          title_vi = ?,
-          title_en = ?,
-          title_jp = ?,
-
-          desc_vi = ?,
-          desc_en = ?,
-          desc_jp = ?,
-
-          content_vi = ?,
-          content_en = ?,
-          content_jp = ?,
-
-          thumbnail = ?,
-          views = ?,
-          status = ?,
-          publish_date = ?,
-          slug = ?
-
-        WHERE id = ?
-      `,
-        [
-          cate,
-
-          title_vi,
-          title_en,
-          title_jp,
-
-          desc_vi,
-          desc_en,
-          desc_jp,
-
-          content_vi,
-          content_en,
-          content_jp,
-
-          thumbnail,
-          views,
-          status,
-          publish_date,
-          slug,
-
-          id,
-        ]
-      );
-
-      return res.status(200).json({
-        success: true,
-        message: "Update article success",
-      });
-    }
-
-    /**
-     * 113 = DELETE
-     */
-    if (idFun == 113) {
-      await db.query(
-        `
-        DELETE FROM articles
-        WHERE id = ?
-      `,
-        [id]
-      );
-
-      return res.status(200).json({
-        success: true,
-        message: "Delete article success",
-      });
-    }
-
-    /**
-     * 114 = GET ALL
-     */
-    if (idFun == 114) {
-      let sql = `
-        SELECT *
-        FROM articles
-      `;
-
-      const params = [];
-
-      // filter cate with mapping
-      if (cate) {
-        // map frontend page keys to stored cate values
-        let filterCate = cate;
-        if (cate === 'page_services') filterCate = 'service';
-        else if (cate === 'page_about') filterCate = 'home';
-        else if (cate === 'page_training') filterCate = 'training';
-
-        console.log("Filtering by cate:", cate, "->", filterCate);
-        sql += ` WHERE cate = ?`;
-        params.push(filterCate);
-      }
-
-      sql += ` ORDER BY id DESC`;
-
-      const [rows] = await db.query(sql, params);
-
-      return res.status(200).json({
-        success: true,
-        total: rows.length,
-        data: rows,
-      });
-    }
-
-    /**
-     * 115 = GET DETAIL
-     */
-    if (idFun == 115) {
-      const [rows] = await db.query(
-        `
-        SELECT *
-        FROM articles
-        WHERE id = ?
-      `,
-        [id]
-      );
-
-      if (rows.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: "Article not found",
         });
       }
 
-      return res.status(200).json({
-        success: true,
-        data: rows[0],
+      /**
+       * 112 = UPDATE
+       */
+      if (idFun == 112) {
+        let thumbnail =
+          req.body.thumbnail || "";
+
+        // upload new image
+        if (req.file) {
+          const fileName =
+            Date.now() + ".jpg";
+
+          const outputPath = path.join(
+            __dirname,
+            "../uploads",
+            fileName
+          );
+
+          await sharp(req.file.buffer)
+            .resize(1200)
+            .jpeg({
+              quality: 70,
+            })
+            .toFile(outputPath);
+
+          thumbnail = `/uploads/${fileName}`;
+        }
+
+        await db.query(
+          `
+          UPDATE articles
+          SET
+            cate = ?,
+
+            title_vi = ?,
+            title_en = ?,
+            title_jp = ?,
+
+            desc_vi = ?,
+            desc_en = ?,
+            desc_jp = ?,
+
+            content_vi = ?,
+            content_en = ?,
+            content_jp = ?,
+
+            thumbnail = ?,
+            views = ?,
+            status = ?,
+            publish_date = ?,
+            slug = ?
+
+          WHERE id = ?
+        `,
+          [
+            cate,
+
+            title_vi,
+            title_en,
+            title_jp,
+
+            desc_vi,
+            desc_en,
+            desc_jp,
+
+            content_vi,
+            content_en,
+            content_jp,
+
+            thumbnail,
+            views,
+            status,
+            publish_date,
+            slug,
+
+            id,
+          ]
+        );
+
+        return res.status(200).json({
+          success: true,
+          message:
+            "Update article success",
+          thumbnail,
+        });
+      }
+
+      /**
+       * 113 = DELETE
+       */
+      if (idFun == 113) {
+        await db.query(
+          `
+          DELETE FROM articles
+          WHERE id = ?
+        `,
+          [id]
+        );
+
+        return res.status(200).json({
+          success: true,
+          message:
+            "Delete article success",
+        });
+      }
+
+      /**
+       * 114 = GET ALL
+       */
+      if (idFun == 114) {
+        let sql = `
+          SELECT *
+          FROM articles
+        `;
+
+        const params = [];
+
+        // cate mapping
+        if (cate) {
+          let filterCate = cate;
+
+          if (
+            cate === "page_services"
+          )
+            filterCate = "service";
+          else if (
+            cate === "page_about"
+          )
+            filterCate = "home";
+          else if (
+            cate === "page_training"
+          )
+            filterCate = "training";
+
+          sql += ` WHERE cate = ?`;
+
+          params.push(filterCate);
+        }
+
+        sql += ` ORDER BY id DESC`;
+
+        const [rows] = await db.query(
+          sql,
+          params
+        );
+
+        return res.status(200).json({
+          success: true,
+          total: rows.length,
+          data: rows,
+        });
+      }
+
+      /**
+       * 115 = GET DETAIL
+       */
+      if (idFun == 115) {
+        const [rows] = await db.query(
+          `
+          SELECT *
+          FROM articles
+          WHERE id = ?
+        `,
+          [id]
+        );
+
+        if (rows.length === 0) {
+          return res.status(404).json({
+            success: false,
+            message:
+              "Article not found",
+          });
+        }
+
+        return res.status(200).json({
+          success: true,
+          data: rows[0],
+        });
+      }
+
+      return res.status(400).json({
+        success: false,
+        message: "Invalid idFun",
+      });
+    } catch (error) {
+      console.error(
+        "ARTICLE ERROR:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+        message: "Server Error",
+        error: error.message,
       });
     }
-
-    return res.status(400).json({
-      success: false,
-      message: "Invalid idFun",
-    });
-  } catch (error) {
-    console.error("ARTICLE ERROR:", error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Server Error",
-      error: error.message,
-    });
-  }
-};
+  },
+];
