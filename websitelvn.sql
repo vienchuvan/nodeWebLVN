@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 21, 2026 lúc 02:09 AM
+-- Thời gian đã tạo: Th5 23, 2026 lúc 02:19 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
--- Phiên bản PHP: 8.2.12
+-- Phiên bản PHP: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -54,7 +54,11 @@ CREATE TABLE `articles` (
 
 INSERT INTO `articles` (`id`, `cate`, `title_vi`, `title_en`, `title_jp`, `desc_vi`, `desc_en`, `desc_jp`, `content_vi`, `content_en`, `content_jp`, `thumbnail`, `views`, `status`, `publish_date`, `slug`, `created_at`, `updated_at`) VALUES
 (1, 'service', 'Dịch vụ thành lập doanh nghiệp FDI', 'FDI Company Establishment Service', 'FDI会社設立サービス', 'Hỗ trợ tư vấn và thành lập doanh nghiệp FDI tại Việt Nam', 'Consulting and establishment support for FDI companies in Vietnam', 'ベトナムにおけるFDI会社設立支援', '<div><h1>Nội dung tiếng Việt</h1></div>', '<div><h1>English Content</h1></div>', '<div><h1>日本語コンテンツ</h1></div>', 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=100&q=80&auto=format&fit=crop', 120, 'published', '2026-05-19', 'dich-vu-thanh-lap-doanh-nghiep-fdi', '2026-05-19 15:10:08', '2026-05-19 15:10:08'),
-(2, 'service', 'Về LE VIET NAM', '', '', 'Đối tác tin cậy vững bước thành công cùng doanh nghiệp.', '', '', 'Câu Chuyện Của Chúng Tôi\nLE VIET NAM được thành lập với tâm huyết trở thành cầu nối vững chắc, đưa các nhà đầu tư quốc tế đến với thị trường Việt Nam đầy tiềm năng, đồng thời hỗ trợ các doanh nghiệp trong nước xây dựng nền móng pháp lý vững chắc.\n\nChúng tôi hiểu rằng, rào cản về thủ tục hành chính, pháp lý và sự khác biệt văn hóa luôn là những thách thức lớn đối với doanh nghiệp. Với đội ngũ chuyên gia, luật sư và cố vấn giàu kinh nghiệm, LE VIET NAM cam kết mang đến những giải pháp tư vấn toàn diện, chính xác và hiệu quả nhất.\n\nTầm Nhìn\nTrở thành đơn vị tư vấn chiến lược và cung cấp dịch vụ pháp lý hàng đầu tại Việt Nam, là điểm đến đầu tiên mà các nhà đầu tư quốc tế nghĩ tới khi quyết định thâm nhập thị trường Việt Nam.\n\nSứ Mệnh\nĐơn giản hóa mọi thủ tục pháp lý phức tạp, tối ưu hóa thời gian và chi phí cho khách hàng. Nâng tầm năng lực nhân sự Việt thông qua các chương trình đào tạo chuẩn quốc tế.\n\nGiá Trị Cốt Lõi\n01\nChuyên Nghiệp\nAm hiểu luật pháp, xử lý hồ sơ nhanh chóng, chính xác.\n\n02\nTận Tâm\nLuôn đặt lợi ích của khách hàng lên hàng đầu, đồng hành trọn đời.\n\n03\nBảo Mật\nCam kết bảo mật tuyệt đối mọi thông tin của doanh nghiệp và đối tác.', '', '', '', 0, 'draft', '2026-05-20', 've-le-viet-nam', '2026-05-20 15:55:21', '2026-05-20 15:55:21');
+(18, '', 'viên aaaa', '', '', 'aaa', '', '', 'ARTICLES: [\n  {\n    id: 13,\n    cate: \'home\',\n    title_vi: \'vien\',\n    title_en: \'\',\n    title_jp: \'\',\n    desc_vi: \'sadasdasd\',\n    desc_en: \'\',\n    desc_jp: \'\',\n    content_vi: \'đâsdasd\',\n    content_en: \'\',\n    content_jp: \'\',\n    thumbnail: \'/uploads/1779381284169.jpg\',\n    views: 0,\n    status: \'published\',\n    publish_date: 2026-05-20T17:00:00.000Z,\n    slug: \'vien\',\n    created_at: 2026-05-21T16:34:44.000Z,\n    updated_at: 2026-05-21T16:36:27.000Z\n  }\n]', '', '', '/uploads/1779381726379.jpg', 0, 'published', '2026-05-21', 'vien-aaaa', '2026-05-21 16:42:06', '2026-05-21 16:42:06'),
+(19, '', 'rỬUHKJFKAJSD', '', '', 'ĐÂSFAS', '', '', '  console.log(\"ARTICLES:\", rows);', '', '', '', 0, 'published', '2026-05-21', 'ruuhkjfkajsd', '2026-05-21 16:43:47', '2026-05-21 16:43:47'),
+(20, '', 'âfffffffffffffwdgsd', '', '', '    console.log(\"ARTICLE BODY:\", req.body);\n', '', '', '    console.log(\"ARTICLE BODY:\", req.body);\n', '', '', '', 0, 'published', '2026-05-21', 'afffffffffffffwdgsd', '2026-05-21 16:45:21', '2026-05-21 16:45:21'),
+(23, 'home', 'toi là vien', '', '', 'filterCate', '', '', 'filterCate', '', '', '', 0, 'published', '2026-05-21', 'toi-la-vien', '2026-05-21 16:51:42', '2026-05-21 16:51:42'),
+(24, 'service', 'Về LE VIET NAM', '', '', 'LE VIET NAM tự hào là đơn vị tư vấn chiến lược hàng đầu, chuyên cung cấp các giải pháp toàn diện về tư vấn xúc tiến đầu tư và hỗ trợ thành lập doanh nghiệp trong nước cũng như quốc tế (FDI).\n\nVới đội ngũ chuyên gia giàu kinh nghiệm, chúng tôi cam kết đồng hành cùng doanh nghiệp từ những bước đầu tiên, giải quyết mọi thủ tục pháp lý phức tạp và nâng cao năng lực nhân sự, giúp doanh nghiệp phát triển bền vững tại thị trường Việt Nam.', '', '', '<div class=\"bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200\"><div class=\"p-8 md:p-10 text-gray-900 space-y-6\"><h2 class=\"text-2xl font-bold text-orange-600 mb-4 border-b pb-2\">Câu Chuyện Của Chúng Tôi</h2><p class=\"leading-relaxed\"><strong>LE VIET NAM</strong> được thành lập với tâm huyết trở thành cầu nối vững chắc, đưa các nhà đầu tư quốc tế đến với thị trường Việt Nam đầy tiềm năng, đồng thời hỗ trợ các doanh nghiệp trong nước xây dựng nền móng pháp lý vững chắc.</p><p class=\"leading-relaxed\">Chúng tôi hiểu rằng, rào cản về thủ tục hành chính, pháp lý và sự khác biệt văn hóa luôn là những thách thức lớn đối với doanh nghiệp. Với đội ngũ chuyên gia, luật sư và cố vấn giàu kinh nghiệm, LE VIET NAM cam kết mang đến những giải pháp tư vấn toàn diện, chính xác và hiệu quả nhất.</p><div class=\"grid md:grid-cols-2 gap-8 mt-8\"><div class=\"bg-slate-50 p-6 rounded-xl border border-gray-100\"><h3 class=\"text-xl font-bold text-[#1e1b4b] mb-3 flex items-center gap-2\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-globe text-orange-500\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle><path d=\"M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20\"></path><path d=\"M2 12h20\"></path></svg> Tầm Nhìn</h3><p class=\"text-gray-700\">Trở thành đơn vị tư vấn chiến lược và cung cấp dịch vụ pháp lý hàng đầu tại Việt Nam, là điểm đến đầu tiên mà các nhà đầu tư quốc tế nghĩ tới khi quyết định thâm nhập thị trường Việt Nam.</p></div><div class=\"bg-slate-50 p-6 rounded-xl border border-gray-100\"><h3 class=\"text-xl font-bold text-[#1e1b4b] mb-3 flex items-center gap-2\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-circle-check-big text-orange-500\" aria-hidden=\"true\"><path d=\"M21.801 10A10 10 0 1 1 17 3.335\"></path><path d=\"m9 11 3 3L22 4\"></path></svg> Sứ Mệnh</h3><p class=\"text-gray-700\">Đơn giản hóa mọi thủ tục pháp lý phức tạp, tối ưu hóa thời gian và chi phí cho khách hàng. Nâng tầm năng lực nhân sự Việt thông qua các chương trình đào tạo chuẩn quốc tế.</p></div></div><h2 class=\"text-2xl font-bold text-orange-600 mb-4 border-b pb-2 mt-10\">Giá Trị Cốt Lõi</h2><div class=\"grid grid-cols-1 sm:grid-cols-3 gap-6\"><div class=\"text-center p-4\"><div class=\"bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-orange-600 font-bold text-xl\">01</div><h4 class=\"font-bold text-indigo-900 mb-2\">Chuyên Nghiệp</h4><p class=\"text-sm text-gray-600\">Am hiểu luật pháp, xử lý hồ sơ nhanh chóng, chính xác.</p></div><div class=\"text-center p-4\"><div class=\"bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-orange-600 font-bold text-xl\">02</div><h4 class=\"font-bold text-indigo-900 mb-2\">Tận Tâm</h4><p class=\"text-sm text-gray-600\">Luôn đặt lợi ích của khách hàng lên hàng đầu, đồng hành trọn đời.</p></div><div class=\"text-center p-4\"><div class=\"bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-orange-600 font-bold text-xl\">03</div><h4 class=\"font-bold text-indigo-900 mb-2\">Bảo Mật</h4><p class=\"text-sm text-gray-600\">Cam kết bảo mật tuyệt đối mọi thông tin của doanh nghiệp và đối tác.</p></div></div></div></div>\n', '', '', '/uploads/1779464125563.jpg', 0, 'published', '2026-05-22', 've-le-viet-nam', '2026-05-22 15:35:25', '2026-05-22 15:35:25');
 
 -- --------------------------------------------------------
 
@@ -85,6 +89,29 @@ INSERT INTO `contacts` (`id`, `name`, `phone`, `service`, `note`, `contact_date`
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `general_settings`
+--
+
+CREATE TABLE `general_settings` (
+  `id` int(11) NOT NULL,
+  `logo` longtext DEFAULT NULL,
+  `hotline` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `workingHours` varchar(255) DEFAULT NULL,
+  `languages` longtext DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `general_settings`
+--
+
+INSERT INTO `general_settings` (`id`, `logo`, `hotline`, `email`, `workingHours`, `languages`, `created_at`) VALUES
+(1, '', '0979951954', 'vienchelsea325@gmail.com', '', '{\"vi\":{\"companyName\":\"\",\"address\":\"\",\"footerContent\":\"\"},\"en\":{\"companyName\":\"\",\"address\":\"\",\"footerContent\":\"\"},\"ja\":{\"companyName\":\"\",\"address\":\"\",\"footerContent\":\"\"}}', '2026-05-22 05:38:25');
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `home_banners`
 --
 
@@ -102,7 +129,7 @@ CREATE TABLE `home_banners` (
 INSERT INTO `home_banners` (`id`, `title`, `desc`, `img`) VALUES
 (1, 'Đối Tác Tin Cậy Trong Xúc Tiến Đầu Tư & Pháp Lý', 'Giải pháp toàn diện về đầu tư, doanh nghiệp và thủ tục pháp lý cho người nước ngoài.', 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200'),
 (2, 'Hỗ Trợ Thành Lập Doanh Nghiệp Chuyên Nghiệp', 'Hỗ trợ trọn gói từ tư vấn đến khi nhận Giấy chứng nhận đầu tư và ĐKKD nhanh chóng.', 'https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&q=80&w=1200'),
-(3, 'Nâng Tầm Nhân Sự Với Đào Tạo Doanh Nghiệp', 'Khóa học Giao tiếp thấu cảm & Tạo ảnh hưởng giúp nâng cao hiệu suất làm việc.', 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&q=80&w=1200');
+(3, 'Nâng Tầm Nhân Sự Với Đào Tạo Doanh Nghiệp', 'Khóa học Giao tiếp thấu cảm & Tạo ảnh hưởng giúp nâng cao hiệu suất làm việc.', '/uploads/1779437019107.jpg');
 
 -- --------------------------------------------------------
 
@@ -153,21 +180,24 @@ INSERT INTO `languages_menu` (`id`, `lang_code`, `key`, `value`, `created_at`, `
 --
 
 CREATE TABLE `menu_items` (
-  `id` varchar(50) NOT NULL,
-  `label` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `id` varchar(255) NOT NULL,
+  `name` longtext DEFAULT NULL,
+  `parent_id` varchar(255) DEFAULT NULL,
+  `sort_order` int(11) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `menu_items`
 --
 
-INSERT INTO `menu_items` (`id`, `label`) VALUES
-('about', 'Giới thiệu'),
-('contact', 'Liên hệ'),
-('home', 'Trang chủ'),
-('news', 'Tin tức'),
-('services', 'Dịch vụ pháp lý & Đầu tư'),
-('training', 'Đào tạo');
+INSERT INTO `menu_items` (`id`, `name`, `parent_id`, `sort_order`, `created_at`) VALUES
+('1779418696725_0', '{\"vi\":\"Trang Chủ\",\"en\":\"hihi\",\"ja\":\"新メニュー\"}', NULL, 0, '2026-05-22 02:58:16'),
+('1779418696729_1', '{\"vi\":\"Giới Thiệu\",\"en\":\"hahah\",\"ja\":\"新メニュー\"}', NULL, 1, '2026-05-22 02:58:16'),
+('1779439780339_2', '{\"vi\":\"Dịch Vụ\",\"en\":\"New Menu\",\"ja\":\"新メニュー\"}', NULL, 2, '2026-05-22 08:49:40'),
+('1779439780374_3', '{\"vi\":\"Đào Tạo\",\"en\":\"New Menu\",\"ja\":\"新メニュー\"}', NULL, 3, '2026-05-22 08:49:40'),
+('1779439780377_4', '{\"vi\":\"Tin Tức\",\"en\":\"New Menu\",\"ja\":\"新メニュー\"}', NULL, 4, '2026-05-22 08:49:40'),
+('1779439780380_5', '{\"vi\":\"Liên Hệ\",\"en\":\"New Menu\",\"ja\":\"新メニュー\"}', NULL, 5, '2026-05-22 08:49:40');
 
 -- --------------------------------------------------------
 
@@ -318,6 +348,12 @@ ALTER TABLE `contacts`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Chỉ mục cho bảng `general_settings`
+--
+ALTER TABLE `general_settings`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Chỉ mục cho bảng `home_banners`
 --
 ALTER TABLE `home_banners`
@@ -375,13 +411,19 @@ ALTER TABLE `sidebar_subitems`
 -- AUTO_INCREMENT cho bảng `articles`
 --
 ALTER TABLE `articles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT cho bảng `contacts`
 --
 ALTER TABLE `contacts`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT cho bảng `general_settings`
+--
+ALTER TABLE `general_settings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT cho bảng `languages_menu`

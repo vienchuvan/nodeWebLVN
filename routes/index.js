@@ -9,9 +9,10 @@ router.get('/', homeController.home);
 // menu
 router.get('/menu', homeController.menu);
 router.get('/lang-menu', homeController.langMenu);
-router.get('/set-menu', homeController.setMenu);
+router.post('/set-menu', homeController.setMenu);
 
 router.post('/set-banner', homeController.bannerHome);
+router.post('/setting-home', homeController.setGeneralSettings);
 
 router.get(
   "/sidebar-menu",

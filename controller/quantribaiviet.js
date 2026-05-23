@@ -56,6 +56,7 @@ exports.articleController = [
   upload.single("thumbnail"),
 
   async (req, res) => {
+    console.log("ARTICLE BODY:", req.body);
     try {
       const {
         idFun,
@@ -89,25 +90,76 @@ exports.articleController = [
 
         // compress + save image
         if (req.file) {
-          const fileName =
-            Date.now() + ".jpg";
+          try {
+            const fileName =
+              Date.now() + ".jpg";
 
-          const outputPath = path.join(
-            __dirname,
-            "../uploads",
-            fileName
-          );
+            const outputPath = path.join(
+              __dirname,
+              "../uploads",
+              fileName
+            );
 
-          await sharp(req.file.buffer)
-            .resize(1200)
-            .jpeg({
-              quality: 70,
-            })
-            .toFile(outputPath);
+            await sharp(req.file.buffer)
+              .resize(1200)
+              .jpeg({
+                quality: 70,
+              })
+              .toFile(outputPath);
 
-          thumbnail = `/uploads/${fileName}`;
+            thumbnail = `/uploads/${fileName}`;
+          } catch (imageError) {
+            console.error("Image processing error:", imageError.message);
+            return res.status(400).json({
+              success: false,
+              message: `Invalid image format: ${imageError.message}. Please upload a valid JPG, PNG, WebP, or GIF image.`,
+            });
+          }
+        } else if (req.body.thumbnail && typeof req.body.thumbnail === 'string') {
+          // Handle base64 thumbnail from frontend
+          try {
+            const base64Data = req.body.thumbnail.split(',')[1] || req.body.thumbnail;
+            const buffer = Buffer.from(base64Data, 'base64');
+
+            const fileName =
+              Date.now() + ".jpg";
+
+            const outputPath = path.join(
+              __dirname,
+              "../uploads",
+              fileName
+            );
+
+            await sharp(buffer)
+              .resize(1200)
+              .jpeg({
+                quality: 70,
+              })
+              .toFile(outputPath);
+
+            thumbnail = `/uploads/${fileName}`;
+          } catch (imageError) {
+            console.error("Base64 image processing error:", imageError.message);
+            return res.status(400).json({
+              success: false,
+              message: `Invalid image format in base64: ${imageError.message}. Please ensure the image data is valid.`,
+            });
+          }
         }
+let filterCate = "";
 
+if (cate) {
+    filterCate = cate;
+
+    if (cate === "page_services")
+        filterCate = "service";
+    else if (cate === "page_about" || cate === "about")
+        filterCate = "home";
+    else if (cate === "page_training")
+        filterCate = "training";
+    else if (cate === "news")
+        filterCate = "news";
+}
         const [result] = await db.query(
           `
           INSERT INTO articles (
@@ -134,7 +186,7 @@ exports.articleController = [
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
           [
-            cate,
+            filterCate,
 
             title_vi,
             title_en,
@@ -155,7 +207,7 @@ exports.articleController = [
             slug,
           ]
         );
-
+console.log("INSERT RESULT:", filterCate);
         return res.status(200).json({
           success: true,
           message: "Add article success",
@@ -173,23 +225,31 @@ exports.articleController = [
 
         // upload new image
         if (req.file) {
-          const fileName =
-            Date.now() + ".jpg";
+          try {
+            const fileName =
+              Date.now() + ".jpg";
 
-          const outputPath = path.join(
-            __dirname,
-            "../uploads",
-            fileName
-          );
+            const outputPath = path.join(
+              __dirname,
+              "../uploads",
+              fileName
+            );
 
-          await sharp(req.file.buffer)
-            .resize(1200)
-            .jpeg({
-              quality: 70,
-            })
-            .toFile(outputPath);
+            await sharp(req.file.buffer)
+              .resize(1200)
+              .jpeg({
+                quality: 70,
+              })
+              .toFile(outputPath);
 
-          thumbnail = `/uploads/${fileName}`;
+            thumbnail = `/uploads/${fileName}`;
+          } catch (imageError) {
+            console.error("Image processing error (UPDATE):", imageError.message);
+            return res.status(400).json({
+              success: false,
+              message: `Invalid image format: ${imageError.message}. Please upload a valid JPG, PNG, WebP, or GIF image.`,
+            });
+          }
         }
 
         await db.query(
@@ -290,7 +350,7 @@ exports.articleController = [
           )
             filterCate = "service";
           else if (
-            cate === "page_about"
+            cate === "page_about" || cate ==="about"
           )
             filterCate = "home";
           else if (
@@ -309,7 +369,7 @@ exports.articleController = [
           sql,
           params
         );
-
+        console.log("ARTICLES:", rows);
         return res.status(200).json({
           success: true,
           total: rows.length,
