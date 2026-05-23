@@ -385,9 +385,9 @@ console.log("INSERT RESULT:", filterCate);
           `
           SELECT *
           FROM articles
-          WHERE id = ?
+          WHERE slug = ?
         `,
-          [id]
+          [slug]
         );
 
         if (rows.length === 0) {
