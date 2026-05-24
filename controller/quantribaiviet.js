@@ -58,7 +58,7 @@ exports.articleController = [
   async (req, res) => {
     console.log("ARTICLE BODY:", req.body);
 
-    try {
+    try {   
       const {
         idFun,
 
