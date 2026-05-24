@@ -631,57 +631,349 @@ exports.bannerHome = [
 
   }
 ];
+
+
 exports.getSidebarMenu = async (req, res) => {
   try {
-    // lấy category
-    const [categories] = await db.query(`
-      SELECT *
-      FROM sidebar_categories
-      ORDER BY id ASC
-    `);
+    const payload = req.method === "POST" ? req.body : req.query;
+    const idFun = payload?.idFun;
+    const type = String(payload?.type || "").toLowerCase();
 
-    // lấy item
-    const [items] = await db.query(`
-      SELECT *
-      FROM sidebar_items
-      ORDER BY id ASC
-    `);
+    const buildSidebarMenu = async () => {
+      const [categories] = await db.query(`
+        SELECT *
+        FROM sidebar_categories
+        ORDER BY id ASC
+      `);
 
-    // lấy sub item
-    const [subItems] = await db.query(`
-      SELECT *
-      FROM sidebar_subitems
-      ORDER BY id ASC
-    `);
+      const [items] = await db.query(`
+        SELECT *
+        FROM sidebar_items
+        ORDER BY id ASC
+      `);
 
-    // build data
-    const result = categories.map((category) => {
-      const categoryItems = items
-        .filter((item) => item.category_id === category.id)
-        .map((item) => {
-          const itemSub = subItems
-            .filter((sub) => sub.item_id === item.id)
-            .map((sub) => ({
-              title: sub.title,
-              id: sub.item_key,
-            }));
+      const [subItems] = await db.query(`
+        SELECT *
+        FROM sidebar_subitems
+        ORDER BY id ASC
+      `);
 
-          return {
-            title: item.title,
-            id: item.item_key,
-            subItems: itemSub,
-          };
+      return categories.map((category) => {
+        const categoryItems = items
+          .filter((item) => Number(item.category_id) === Number(category.id))
+          .map((item) => {
+            const itemSub = subItems
+              .filter((sub) => Number(sub.item_id) === Number(item.id))
+              .map((sub) => ({
+                title: sub.title,
+                id: sub.item_key,
+              }));
+
+            return {
+              title: item.title,
+              id: item.item_key,
+              subItems: itemSub,
+            };
+          });
+
+        return {
+          category: category.category_name,
+          items: categoryItems,
+        };
+      });
+    };
+
+    if (!idFun) {
+      const data = await buildSidebarMenu();
+
+      return res.status(200).json({
+        success: true,
+        data,
+      });
+    }
+
+    if (Number(idFun) === 114) {
+      const data = await buildSidebarMenu();
+
+      return res.status(200).json({
+        success: true,
+        data,
+      });
+    }
+
+    if (Number(idFun) === 111) {
+      if (type === "category") {
+        const category_name =
+          typeof payload?.category_name === "string"
+            ? payload.category_name.trim()
+            : payload?.title?.trim();
+
+        if (!category_name) {
+          return res.status(400).json({
+            success: false,
+            message: "category_name là bắt buộc",
+          });
+        }
+
+        const newId = Date.now();
+
+        await db.query(
+          `
+          INSERT INTO sidebar_categories
+          (id, category_name)
+          VALUES (?, ?)
+        `,
+          [newId, category_name]
+        );
+
+        return res.status(200).json({
+          success: true,
+          message: "Thêm nhóm sidebar thành công",
+          data: {
+            id: newId,
+            category_name,
+          },
         });
+      }
 
-      return {
-        category: category.category_name,
-        items: categoryItems,
-      };
-    });
+      if (type === "item") {
+        const category_id = Number(payload?.category_id);
+        const title = typeof payload?.title === "string" ? payload.title.trim() : "";
+        const item_key = typeof payload?.item_key === "string" ? payload.item_key.trim() : "";
 
-    return res.status(200).json({
-      success: true,
-      data: result,
+        if (!Number.isFinite(category_id) || !title || !item_key) {
+          return res.status(400).json({
+            success: false,
+            message: "category_id, title và item_key là bắt buộc",
+          });
+        }
+
+        const newId = Date.now();
+
+        await db.query(
+          `
+          INSERT INTO sidebar_items
+          (id, category_id, title, item_key)
+          VALUES (?, ?, ?, ?)
+        `,
+          [newId, category_id, title, item_key]
+        );
+
+        return res.status(200).json({
+          success: true,
+          message: "Thêm mục sidebar thành công",
+          data: {
+            id: newId,
+            category_id,
+            title,
+            item_key,
+          },
+        });
+      }
+
+      if (type === "subitem") {
+        const item_id = Number(payload?.item_id);
+        const title = typeof payload?.title === "string" ? payload.title.trim() : "";
+        const item_key = typeof payload?.item_key === "string" ? payload.item_key.trim() : "";
+
+        if (!Number.isFinite(item_id) || !title || !item_key) {
+          return res.status(400).json({
+            success: false,
+            message: "item_id, title và item_key là bắt buộc",
+          });
+        }
+
+        const newId = Date.now();
+
+        await db.query(
+          `
+          INSERT INTO sidebar_subitems
+          (id, item_id, title, item_key)
+          VALUES (?, ?, ?, ?)
+        `,
+          [newId, item_id, title, item_key]
+        );
+
+        return res.status(200).json({
+          success: true,
+          message: "Thêm subitem sidebar thành công",
+          data: {
+            id: newId,
+            item_id,
+            title,
+            item_key,
+          },
+        });
+      }
+
+      return res.status(400).json({
+        success: false,
+        message: "type không hợp lệ",
+      });
+    }
+
+    if (Number(idFun) === 112) {
+      const id = Number(payload?.id);
+
+      if (!Number.isFinite(id)) {
+        return res.status(400).json({
+          success: false,
+          message: "id là bắt buộc",
+        });
+      }
+
+      if (type === "category") {
+        const category_name =
+          typeof payload?.category_name === "string"
+            ? payload.category_name.trim()
+            : payload?.title?.trim();
+
+        if (!category_name) {
+          return res.status(400).json({
+            success: false,
+            message: "category_name là bắt buộc",
+          });
+        }
+
+        await db.query(
+          `
+          UPDATE sidebar_categories
+          SET category_name = ?
+          WHERE id = ?
+        `,
+          [category_name, id]
+        );
+
+        return res.status(200).json({
+          success: true,
+          message: "Cập nhật nhóm sidebar thành công",
+        });
+      }
+
+      if (type === "item") {
+        const category_id = Number(payload?.category_id);
+        const title = typeof payload?.title === "string" ? payload.title.trim() : "";
+        const item_key = typeof payload?.item_key === "string" ? payload.item_key.trim() : "";
+
+        if (!Number.isFinite(category_id) || !title || !item_key) {
+          return res.status(400).json({
+            success: false,
+            message: "category_id, title và item_key là bắt buộc",
+          });
+        }
+
+        await db.query(
+          `
+          UPDATE sidebar_items
+          SET category_id = ?, title = ?, item_key = ?
+          WHERE id = ?
+        `,
+          [category_id, title, item_key, id]
+        );
+
+        return res.status(200).json({
+          success: true,
+          message: "Cập nhật mục sidebar thành công",
+        });
+      }
+
+      if (type === "subitem") {
+        const item_id = Number(payload?.item_id);
+        const title = typeof payload?.title === "string" ? payload.title.trim() : "";
+        const item_key = typeof payload?.item_key === "string" ? payload.item_key.trim() : "";
+
+        if (!Number.isFinite(item_id) || !title || !item_key) {
+          return res.status(400).json({
+            success: false,
+            message: "item_id, title và item_key là bắt buộc",
+          });
+        }
+
+        await db.query(
+          `
+          UPDATE sidebar_subitems
+          SET item_id = ?, title = ?, item_key = ?
+          WHERE id = ?
+        `,
+          [item_id, title, item_key, id]
+        );
+
+        return res.status(200).json({
+          success: true,
+          message: "Cập nhật subitem sidebar thành công",
+        });
+      }
+
+      return res.status(400).json({
+        success: false,
+        message: "type không hợp lệ",
+      });
+    }
+
+    if (Number(idFun) === 113) {
+      const id = Number(payload?.id);
+
+      if (!Number.isFinite(id)) {
+        return res.status(400).json({
+          success: false,
+          message: "id là bắt buộc",
+        });
+      }
+
+      if (type === "category") {
+        await db.query(
+          `
+          DELETE FROM sidebar_categories
+          WHERE id = ?
+        `,
+          [id]
+        );
+
+        return res.status(200).json({
+          success: true,
+          message: "Xóa nhóm sidebar thành công",
+        });
+      }
+
+      if (type === "item") {
+        await db.query(
+          `
+          DELETE FROM sidebar_items
+          WHERE id = ?
+        `,
+          [id]
+        );
+
+        return res.status(200).json({
+          success: true,
+          message: "Xóa mục sidebar thành công",
+        });
+      }
+
+      if (type === "subitem") {
+        await db.query(
+          `
+          DELETE FROM sidebar_subitems
+          WHERE id = ?
+        `,
+          [id]
+        );
+
+        return res.status(200).json({
+          success: true,
+          message: "Xóa subitem sidebar thành công",
+        });
+      }
+
+      return res.status(400).json({
+        success: false,
+        message: "type không hợp lệ",
+      });
+    }
+
+    return res.status(400).json({
+      success: false,
+      message: "idFun không hợp lệ",
     });
   } catch (error) {
     console.error("GET SIDEBAR ERROR:", error);
@@ -693,6 +985,8 @@ exports.getSidebarMenu = async (req, res) => {
     });
   }
 };
+
+
 exports.about = (req, res) => {
   res.send('Trang giới thiệu');
 };

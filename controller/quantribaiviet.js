@@ -57,6 +57,7 @@ exports.articleController = [
 
   async (req, res) => {
     console.log("ARTICLE BODY:", req.body);
+
     try {
       const {
         idFun,
@@ -83,12 +84,15 @@ exports.articleController = [
       } = req.body;
 
       /**
-       * 111 = ADD
+       * 111 = ADD OR UPDATE
        */
       if (idFun == 111) {
-        let thumbnail = "";
+        let thumbnail =
+          req.body.thumbnail || "";
 
-        // compress + save image
+        /**
+         * upload image file
+         */
         if (req.file) {
           try {
             const fileName =
@@ -109,17 +113,40 @@ exports.articleController = [
 
             thumbnail = `/uploads/${fileName}`;
           } catch (imageError) {
-            console.error("Image processing error:", imageError.message);
+            console.error(
+              "Image processing error:",
+              imageError.message
+            );
+
             return res.status(400).json({
               success: false,
-              message: `Invalid image format: ${imageError.message}. Please upload a valid JPG, PNG, WebP, or GIF image.`,
+              message: `Invalid image format: ${imageError.message}`,
             });
           }
-        } else if (req.body.thumbnail && typeof req.body.thumbnail === 'string') {
-          // Handle base64 thumbnail from frontend
+        }
+
+        /**
+         * upload base64 image
+         */
+        else if (
+          req.body.thumbnail &&
+          typeof req.body.thumbnail ===
+            "string" &&
+          req.body.thumbnail.startsWith(
+            "data:"
+          )
+        ) {
           try {
-            const base64Data = req.body.thumbnail.split(',')[1] || req.body.thumbnail;
-            const buffer = Buffer.from(base64Data, 'base64');
+            const base64Data =
+              req.body.thumbnail.split(
+                ","
+              )[1] ||
+              req.body.thumbnail;
+
+            const buffer = Buffer.from(
+              base64Data,
+              "base64"
+            );
 
             const fileName =
               Date.now() + ".jpg";
@@ -139,78 +166,180 @@ exports.articleController = [
 
             thumbnail = `/uploads/${fileName}`;
           } catch (imageError) {
-            console.error("Base64 image processing error:", imageError.message);
+            console.error(
+              "Base64 image processing error:",
+              imageError.message
+            );
+
             return res.status(400).json({
               success: false,
-              message: `Invalid image format in base64: ${imageError.message}. Please ensure the image data is valid.`,
+              message: `Invalid base64 image: ${imageError.message}`,
             });
           }
         }
-let filterCate = "";
 
-if (cate) {
-    filterCate = cate;
+        /**
+         * cate mapping
+         */
+        let filterCate = "";
 
-    if (cate === "page_services")
-        filterCate = "service";
-    else if (cate === "page_about" || cate === "about")
-        filterCate = "home";
-    else if (cate === "page_training")
-        filterCate = "training";
-    else if (cate === "news")
-        filterCate = "news";
-}
-        const [result] = await db.query(
-          `
-          INSERT INTO articles (
-            cate,
+        if (cate) {
+          filterCate = cate;
 
-            title_vi,
-            title_en,
-            title_jp,
-
-            desc_vi,
-            desc_en,
-            desc_jp,
-
-            content_vi,
-            content_en,
-            content_jp,
-
-            thumbnail,
-            views,
-            status,
-            publish_date,
-            slug
+          if (
+            cate === "page_services"
           )
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `,
-          [
-            filterCate,
+            filterCate = "service";
+          else if (
+            cate === "page_about" ||
+            cate === "about"
+          )
+            filterCate = "home";
+          else if (
+            cate === "page_training"
+          )
+            filterCate = "training";
+          else if (cate === "news")
+            filterCate = "news";
+        }
 
-            title_vi,
-            title_en,
-            title_jp,
+        /**
+         * CHECK EXIST ID
+         */
+        if (id) {
+          const [checkRows] =
+            await db.query(
+              `
+              SELECT id
+              FROM articles
+              WHERE id = ?
+            `,
+              [id]
+            );
 
-            desc_vi,
-            desc_en,
-            desc_jp,
+          /**
+           * UPDATE IF EXIST
+           */
+          if (checkRows.length > 0) {
+            await db.query(
+              `
+              UPDATE articles
+              SET
+                cate = ?,
 
-            content_vi,
-            content_en,
-            content_jp,
+                title_vi = ?,
+                title_en = ?,
+                title_jp = ?,
 
-            thumbnail,
-            views || 0,
-            status || "draft",
-            publish_date,
-            slug,
-          ]
-        );
-console.log("INSERT RESULT:", filterCate);
+                desc_vi = ?,
+                desc_en = ?,
+                desc_jp = ?,
+
+                content_vi = ?,
+                content_en = ?,
+                content_jp = ?,
+
+                thumbnail = ?,
+                views = ?,
+                status = ?,
+                publish_date = ?,
+                slug = ?
+
+              WHERE id = ?
+            `,
+              [
+                filterCate,
+
+                title_vi,
+                title_en,
+                title_jp,
+
+                desc_vi,
+                desc_en,
+                desc_jp,
+
+                content_vi,
+                content_en,
+                content_jp,
+
+                thumbnail,
+                views || 0,
+                status || "draft",
+                publish_date,
+                slug,
+
+                id,
+              ]
+            );
+
+            return res
+              .status(200)
+              .json({
+                success: true,
+                message:
+                  "Update article success",
+                id,
+                thumbnail,
+              });
+          }
+        }
+
+        /**
+         * INSERT NEW
+         */
+        const [result] =
+          await db.query(
+            `
+            INSERT INTO articles (
+              cate,
+
+              title_vi,
+              title_en,
+              title_jp,
+
+              desc_vi,
+              desc_en,
+              desc_jp,
+
+              content_vi,
+              content_en,
+              content_jp,
+
+              thumbnail,
+              views,
+              status,
+              publish_date,
+              slug
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          `,
+            [
+              filterCate,
+
+              title_vi,
+              title_en,
+              title_jp,
+
+              desc_vi,
+              desc_en,
+              desc_jp,
+
+              content_vi,
+              content_en,
+              content_jp,
+
+              thumbnail,
+              views || 0,
+              status || "draft",
+              publish_date,
+              slug,
+            ]
+          );
+
         return res.status(200).json({
           success: true,
-          message: "Add article success",
+          message:
+            "Add article success",
           insertId: result.insertId,
           thumbnail,
         });
@@ -244,10 +373,14 @@ console.log("INSERT RESULT:", filterCate);
 
             thumbnail = `/uploads/${fileName}`;
           } catch (imageError) {
-            console.error("Image processing error (UPDATE):", imageError.message);
+            console.error(
+              "Image processing error (UPDATE):",
+              imageError.message
+            );
+
             return res.status(400).json({
               success: false,
-              message: `Invalid image format: ${imageError.message}. Please upload a valid JPG, PNG, WebP, or GIF image.`,
+              message: `Invalid image format: ${imageError.message}`,
             });
           }
         }
@@ -350,13 +483,16 @@ console.log("INSERT RESULT:", filterCate);
           )
             filterCate = "service";
           else if (
-            cate === "page_about" || cate ==="about"
+            cate === "page_about" ||
+            cate === "about"
           )
             filterCate = "home";
           else if (
             cate === "page_training"
           )
             filterCate = "training";
+          else if (cate === "news")
+            filterCate = "news";
 
           sql += ` WHERE cate = ?`;
 
@@ -365,11 +501,11 @@ console.log("INSERT RESULT:", filterCate);
 
         sql += ` ORDER BY id DESC`;
 
-        const [rows] = await db.query(
-          sql,
-          params
-        );
+        const [rows] =
+          await db.query(sql, params);
+
         console.log("ARTICLES:", rows);
+
         return res.status(200).json({
           success: true,
           total: rows.length,
@@ -381,14 +517,15 @@ console.log("INSERT RESULT:", filterCate);
        * 115 = GET DETAIL
        */
       if (idFun == 115) {
-        const [rows] = await db.query(
-          `
-          SELECT *
-          FROM articles
-          WHERE slug = ?
-        `,
-          [slug]
-        );
+        const [rows] =
+          await db.query(
+            `
+            SELECT *
+            FROM articles
+            WHERE slug = ?
+          `,
+            [slug]
+          );
 
         if (rows.length === 0) {
           return res.status(404).json({

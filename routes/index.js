@@ -14,7 +14,8 @@ router.post('/set-menu', homeController.setMenu);
 router.post('/set-banner', homeController.bannerHome);
 router.post('/setting-home', homeController.setGeneralSettings);
 
-router.get(
+
+router.post(
   "/sidebar-menu",
   homeController.getSidebarMenu
 );
