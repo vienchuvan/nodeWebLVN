@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 24, 2026 lúc 06:23 PM
+-- Thời gian đã tạo: Th5 27, 2026 lúc 03:25 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -208,12 +208,12 @@ CREATE TABLE `menu_items` (
 --
 
 INSERT INTO `menu_items` (`id`, `name`, `link`, `parent_id`, `sort_order`, `created_at`) VALUES
-('1779418696725_0', '{\"vi\":\"Trang Chủ\",\"en\":\"hihi\",\"ja\":\"新メニュー\"}', '/', NULL, 0, '2026-05-22 02:58:16'),
-('1779418696729_1', '{\"vi\":\"Giới Thiệu\",\"en\":\"hahah\",\"ja\":\"新メニュー\"}', '/gioi-thieu', NULL, 1, '2026-05-22 02:58:16'),
-('1779439780339_2', '{\"vi\":\"Dịch Vụ\",\"en\":\"New Menu\",\"ja\":\"新メニュー\"}', '/dich-vu', NULL, 2, '2026-05-22 08:49:40'),
-('1779439780374_3', '{\"vi\":\"Đào Tạo\",\"en\":\"New Menu\",\"ja\":\"新メニュー\"}', '/dao-tao', NULL, 3, '2026-05-22 08:49:40'),
-('1779439780377_4', '{\"vi\":\"Tin Tức\",\"en\":\"New Menu\",\"ja\":\"新メニュー\"}', '/tin-tuc', NULL, 4, '2026-05-22 08:49:40'),
-('1779439780380_5', '{\"vi\":\"Liên Hệ\",\"en\":\"New Menu\",\"ja\":\"新メニュー\"}', '/lien-he', NULL, 5, '2026-05-22 08:49:40');
+('1779418696725_0', '{\"vi\":\"Trang Chủ\",\"en\":\"Home\",\"ja\":\"ゲート\"}', '/', NULL, 0, '2026-05-22 02:58:16'),
+('1779418696729_1', '{\"vi\":\"Giới Thiệu\",\"en\":\"Introduce\",\"ja\":\"診る\"}', '/gioi-thieu', NULL, 1, '2026-05-22 02:58:16'),
+('1779439780339_2', '{\"vi\":\"Dịch Vụ\",\"en\":\"Service\",\"ja\":\"サービス\"}', '/dich-vu', NULL, 2, '2026-05-22 08:49:40'),
+('1779439780374_3', '{\"vi\":\"Đào Tạo\",\"en\":\"Training\",\"ja\":\"トレーニング\"}', '/dao-tao', NULL, 3, '2026-05-22 08:49:40'),
+('1779439780377_4', '{\"vi\":\"Tin Tức\",\"en\":\"News\",\"ja\":\"ニュース\"}', '/tin-tuc', NULL, 4, '2026-05-22 08:49:40'),
+('1779439780380_5', '{\"vi\":\"Liên Hệ\",\"en\":\"Contact\",\"ja\":\"接触\"}', '/lien-he', NULL, 5, '2026-05-22 08:49:40');
 
 -- --------------------------------------------------------
 
@@ -310,8 +310,8 @@ CREATE TABLE `sidebar_items` (
 --
 
 INSERT INTO `sidebar_items` (`id`, `category_id`, `title`, `item_key`, `created_at`) VALUES
-(1, 1, 'Hỗ trợ tư vấn xúc tiến đầu tư', 'ho-tro-tu-van-xuc-tien-đau-tu-&-thanh-lap-fdi', '2026-05-18 14:59:17'),
-(2, 1, 'Hỗ trợ thành lập doanh nghiệp', 'dich-vu-thanh-lap-doanh-nghiep-fdi', '2026-05-18 14:59:17'),
+(1, 1, 'Hỗ trợ tư vấn xúc tiến đầu tư', 'ho-tro-tu-van-xuc-tien-dau-tu-thanh-lap-fdi', '2026-05-18 14:59:17'),
+(2, 1, 'Hỗ trợ thành lập doanh nghiệp', 'dich-vu-tu-van-thanh-lap-cong-ty-doanh-nghiep', '2026-05-18 14:59:17'),
 (3, 1, 'Giấy phép lao động - Visa - Thẻ tạm trú', 'dich-vu-the-tam-tru-cho-nguoi-nuoc-ngoai', '2026-05-18 14:59:17'),
 (4, 2, 'Đào tạo kỹ năng giao tiếp tại nơi làm việc', 'ky-nang-noi-lam-viec', '2026-05-18 14:59:17');
 

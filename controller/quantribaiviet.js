@@ -52,16 +52,14 @@ const upload = multer({
  * 115 = GET DETAIL
  */
 
+
 exports.articleController = [
   upload.single("thumbnail"),
 
   async (req, res) => {
-    console.log("ARTICLE BODY:", req.body);
-
-    try {   
+    try {
       const {
         idFun,
-
         id,
         cate,
 
@@ -84,127 +82,89 @@ exports.articleController = [
       } = req.body;
 
       /**
+       * HANDLE IMAGE
+       */
+      const handleThumbnail = async () => {
+        let thumbnail = req.body.thumbnail || "";
+
+        // upload file
+        if (req.file) {
+          const fileName = Date.now() + ".jpg";
+
+          const outputPath = path.join(
+            __dirname,
+            "../uploads",
+            fileName
+          );
+
+          await sharp(req.file.buffer)
+            .resize(1200)
+            .jpeg({ quality: 70 })
+            .toFile(outputPath);
+
+          return `/uploads/${fileName}`;
+        }
+
+        // upload base64
+        if (
+          thumbnail &&
+          typeof thumbnail === "string" &&
+          thumbnail.startsWith("data:")
+        ) {
+          const base64Data =
+            thumbnail.split(",")[1];
+
+          const buffer = Buffer.from(
+            base64Data,
+            "base64"
+          );
+
+          const fileName = Date.now() + ".jpg";
+
+          const outputPath = path.join(
+            __dirname,
+            "../uploads",
+            fileName
+          );
+
+          await sharp(buffer)
+            .resize(1200)
+            .jpeg({ quality: 70 })
+            .toFile(outputPath);
+
+          return `/uploads/${fileName}`;
+        }
+
+        // giữ nguyên ảnh cũ
+        return thumbnail;
+      };
+
+      /**
+       * cate mapping
+       */
+      let filterCate = cate || "";
+
+      if (cate === "page_services")
+        filterCate = "service";
+      else if (
+        cate === "page_about" ||
+        cate === "about"
+      )
+        filterCate = "home";
+      else if (cate === "page_training")
+        filterCate = "training";
+      else if (cate === "news")
+        filterCate = "news";
+
+      /**
        * 111 = ADD OR UPDATE
        */
       if (idFun == 111) {
-        let thumbnail =
-          req.body.thumbnail || "";
+        const thumbnail =
+          await handleThumbnail();
 
         /**
-         * upload image file
-         */
-        if (req.file) {
-          try {
-            const fileName =
-              Date.now() + ".jpg";
-
-            const outputPath = path.join(
-              __dirname,
-              "../uploads",
-              fileName
-            );
-
-            await sharp(req.file.buffer)
-              .resize(1200)
-              .jpeg({
-                quality: 70,
-              })
-              .toFile(outputPath);
-
-            thumbnail = `/uploads/${fileName}`;
-          } catch (imageError) {
-            console.error(
-              "Image processing error:",
-              imageError.message
-            );
-
-            return res.status(400).json({
-              success: false,
-              message: `Invalid image format: ${imageError.message}`,
-            });
-          }
-        }
-
-        /**
-         * upload base64 image
-         */
-        else if (
-          req.body.thumbnail &&
-          typeof req.body.thumbnail ===
-            "string" &&
-          req.body.thumbnail.startsWith(
-            "data:"
-          )
-        ) {
-          try {
-            const base64Data =
-              req.body.thumbnail.split(
-                ","
-              )[1] ||
-              req.body.thumbnail;
-
-            const buffer = Buffer.from(
-              base64Data,
-              "base64"
-            );
-
-            const fileName =
-              Date.now() + ".jpg";
-
-            const outputPath = path.join(
-              __dirname,
-              "../uploads",
-              fileName
-            );
-
-            await sharp(buffer)
-              .resize(1200)
-              .jpeg({
-                quality: 70,
-              })
-              .toFile(outputPath);
-
-            thumbnail = `/uploads/${fileName}`;
-          } catch (imageError) {
-            console.error(
-              "Base64 image processing error:",
-              imageError.message
-            );
-
-            return res.status(400).json({
-              success: false,
-              message: `Invalid base64 image: ${imageError.message}`,
-            });
-          }
-        }
-
-        /**
-         * cate mapping
-         */
-        let filterCate = "";
-
-        if (cate) {
-          filterCate = cate;
-
-          if (
-            cate === "page_services"
-          )
-            filterCate = "service";
-          else if (
-            cate === "page_about" ||
-            cate === "about"
-          )
-            filterCate = "home";
-          else if (
-            cate === "page_training"
-          )
-            filterCate = "training";
-          else if (cate === "news")
-            filterCate = "news";
-        }
-
-        /**
-         * CHECK EXIST ID
+         * CHECK EXIST
          */
         if (id) {
           const [checkRows] =
@@ -217,9 +177,6 @@ exports.articleController = [
               [id]
             );
 
-          /**
-           * UPDATE IF EXIST
-           */
           if (checkRows.length > 0) {
             await db.query(
               `
@@ -272,20 +229,18 @@ exports.articleController = [
               ]
             );
 
-            return res
-              .status(200)
-              .json({
-                success: true,
-                message:
-                  "Update article success",
-                id,
-                thumbnail,
-              });
+            return res.status(200).json({
+              success: true,
+              message:
+                "Update article success",
+              id,
+              thumbnail,
+            });
           }
         }
 
         /**
-         * INSERT NEW
+         * INSERT
          */
         const [result] =
           await db.query(
@@ -349,41 +304,8 @@ exports.articleController = [
        * 112 = UPDATE
        */
       if (idFun == 112) {
-        let thumbnail =
-          req.body.thumbnail || "";
-
-        // upload new image
-        if (req.file) {
-          try {
-            const fileName =
-              Date.now() + ".jpg";
-
-            const outputPath = path.join(
-              __dirname,
-              "../uploads",
-              fileName
-            );
-
-            await sharp(req.file.buffer)
-              .resize(1200)
-              .jpeg({
-                quality: 70,
-              })
-              .toFile(outputPath);
-
-            thumbnail = `/uploads/${fileName}`;
-          } catch (imageError) {
-            console.error(
-              "Image processing error (UPDATE):",
-              imageError.message
-            );
-
-            return res.status(400).json({
-              success: false,
-              message: `Invalid image format: ${imageError.message}`,
-            });
-          }
-        }
+        const thumbnail =
+          await handleThumbnail();
 
         await db.query(
           `
@@ -412,7 +334,7 @@ exports.articleController = [
           WHERE id = ?
         `,
           [
-            cate,
+            filterCate,
 
             title_vi,
             title_en,
@@ -427,8 +349,8 @@ exports.articleController = [
             content_jp,
 
             thumbnail,
-            views,
-            status,
+            views || 0,
+            status || "draft",
             publish_date,
             slug,
 
@@ -474,28 +396,8 @@ exports.articleController = [
 
         const params = [];
 
-        // cate mapping
-        if (cate) {
-          let filterCate = cate;
-
-          if (
-            cate === "page_services"
-          )
-            filterCate = "service";
-          else if (
-            cate === "page_about" ||
-            cate === "about"
-          )
-            filterCate = "home";
-          else if (
-            cate === "page_training"
-          )
-            filterCate = "training";
-          else if (cate === "news")
-            filterCate = "news";
-
+        if (filterCate) {
           sql += ` WHERE cate = ?`;
-
           params.push(filterCate);
         }
 
@@ -503,8 +405,6 @@ exports.articleController = [
 
         const [rows] =
           await db.query(sql, params);
-
-        console.log("ARTICLES:", rows);
 
         return res.status(200).json({
           success: true,
@@ -514,7 +414,7 @@ exports.articleController = [
       }
 
       /**
-       * 115 = GET DETAIL
+       * 115 = DETAIL
        */
       if (idFun == 115) {
         const [rows] =
