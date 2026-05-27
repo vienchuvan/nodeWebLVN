@@ -20,7 +20,7 @@ if (!fs.existsSync('uploads')) {
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use('/', webRoutes);
+app.use('/api/', webRoutes);
 
 const PORT = process.env.PORT || 3000;
 
