@@ -18,7 +18,7 @@ if (!fs.existsSync('uploads')) {
   fs.mkdirSync('uploads');
 }
 
-// Multer configuration
+// Multer confurlIguration
 const storage = multer.memoryStorage();
 const upload = multer({
   storage,
@@ -283,171 +283,276 @@ exports.setMenu = async (req, res) => {
 };
 
 exports.setGeneralSettings = async (req, res) => {
+  try {
+    const { idFun } = req.body;
 
-    try {
+    // ==============================
+    // GET SETTINGS
+    // ==============================
+    if (idFun == 100) {
+      const [rows] = await db.query(`
+        SELECT *
+        FROM general_settings
+        LIMIT 1
+      `);
 
-        const { idFun } = req.body;
+      let data = {};
 
-        // =====================================
-        // GET SETTINGS
-        // =====================================
-        if (idFun == 100) {
+      if (rows.length > 0) {
+        data = rows[0];
 
-            const [rows] = await db.query(`
-                SELECT *
-                FROM general_settings
-                LIMIT 1
-            `);
+        data.languages =
+          typeof data.languages === "string"
+            ? JSON.parse(data.languages)
+            : data.languages;
+      } else {
+        data = {
+          logo: "",
+          imgLogo: "",
 
-            let data = {};
+          hotline: "",
+          email: "",
+          workingHours: "",
 
-            if (rows.length > 0) {
+          urlFacebook: "",
+          urlYoutube: "",
+          urlZalo: "",
+          urlTiktok: "",
+          urlIg: "",
+          urlLinkedin: "",
 
-                data = rows[0];
+          languages: {
+            vi: {
+              companyName: "",
+              address: "",
+              footerContent: "",
+            },
+            en: {
+              companyName: "",
+              address: "",
+              footerContent: "",
+            },
+            ja: {
+              companyName: "",
+              address: "",
+              footerContent: "",
+            },
+          },
+        };
+      }
 
-                // parse json
-                data.languages =
-                    typeof data.languages === "string"
-                        ? JSON.parse(data.languages)
-                        : data.languages;
-
-            } else {
-
-                // default data
-                data = {
-
-                    logo: "",
-
-                    hotline: "",
-
-                    email: "",
-
-                    workingHours: "",
-
-                    languages: {
-                        vi: {
-                            companyName: "",
-                            address: "",
-                            footerContent: "",
-                        },
-
-                        en: {
-                            companyName: "",
-                            address: "",
-                            footerContent: "",
-                        },
-
-                        ja: {
-                            companyName: "",
-                            address: "",
-                            footerContent: "",
-                        },
-                    },
-                };
-            }
-
-            return res.json({
-                success: true,
-                data,
-            });
-        }
-
-        // =====================================
-        // SAVE SETTINGS
-        // =====================================
-        if (idFun == 200) {
-
-            const {
-                logo,
-                hotline,
-                email,
-                workingHours,
-                languages,
-            } = req.body;
-
-            // check exists
-            const [exists] = await db.query(`
-                SELECT id
-                FROM general_settings
-                LIMIT 1
-            `);
-
-            // update
-            if (exists.length > 0) {
-
-                await db.query(
-                    `
-                    UPDATE general_settings
-                    SET
-                        logo = ?,
-                        hotline = ?,
-                        email = ?,
-                        workingHours = ?,
-                        languages = ?
-                    WHERE id = ?
-                    `,
-                    [
-                        logo || "",
-                        hotline || "",
-                        email || "",
-                        workingHours || "",
-                        JSON.stringify(
-                            languages || {}
-                        ),
-                        exists[0].id,
-                    ]
-                );
-
-            }
-
-            // insert
-            else {
-
-                await db.query(
-                    `
-                    INSERT INTO general_settings
-                    (
-                        logo,
-                        hotline,
-                        email,
-                        workingHours,
-                        languages
-                    )
-                    VALUES (?, ?, ?, ?, ?)
-                    `,
-                    [
-                        logo || "",
-                        hotline || "",
-                        email || "",
-                        workingHours || "",
-                        JSON.stringify(
-                            languages || {}
-                        ),
-                    ]
-                );
-            }
-
-            return res.json({
-                success: true,
-                message:
-                    "Lưu cài đặt thành công",
-            });
-        }
-
-        return res.status(400).json({
-            success: false,
-            message: "idFun không hợp lệ",
-        });
-
-    } catch (error) {
-
-        console.log(error);
-
-        return res.status(500).json({
-            success: false,
-            message: error.message,
-        });
+      return res.json({
+        success: true,
+        data,
+      });
     }
+
+    // ==============================
+    // SAVE SETTINGS
+    // ==============================
+    if (idFun == 200) {
+      const {
+        logo,
+
+        hotline,
+        email,
+        workingHours,
+
+        urlFacebook,
+        urlYoutube,
+        urlZalo,
+        urlTiktok,
+        urlIg,
+        urlLinkedin,
+
+        languages,
+      } = req.body;
+
+      // Parse languages nếu gửi FormData
+      const languagesData =
+        typeof languages === "string"
+          ? JSON.parse(languages)
+          : languages;
+
+      // ==============================
+      // Upload imgLogo
+      // ==============================
+      let imgLogoPath = "";
+
+      if (req.file) {
+        const uploadDir = path.join(
+          __dirname,
+          "../uploads/settings"
+        );
+
+        if (!fs.existsSync(uploadDir)) {
+          fs.mkdirSync(uploadDir, {
+            recursive: true,
+          });
+        }
+
+        const fileName =
+          Date.now() +
+          "-" +
+          Math.random()
+            .toString(36)
+            .substring(2, 8) +
+          ".webp";
+
+        const filePath = path.join(
+          uploadDir,
+          fileName
+        );
+
+        await sharp(req.file.buffer)
+          .resize({
+            width: 1200,
+            withoutEnlargement: true,
+          })
+          .webp({
+            quality: 85,
+          })
+          .toFile(filePath);
+
+        imgLogoPath =
+          "/uploads/settings/" + fileName;
+      }
+
+      // ==============================
+      // Check exists
+      // ==============================
+      const [exists] = await db.query(`
+        SELECT *
+        FROM general_settings
+        LIMIT 1
+      `);
+
+      // ==============================
+      // UPDATE
+      // ==============================
+      if (exists.length > 0) {
+        const current = exists[0];
+
+        await db.query(
+          `
+          UPDATE general_settings
+          SET
+            logo = ?,
+            imgLogo = ?,
+
+            hotline = ?,
+            email = ?,
+            workingHours = ?,
+
+            urlFacebook = ?,
+            urlYoutube = ?,
+            urlZalo = ?,
+            urlTiktok = ?,
+            urlIg = ?,
+            urlLinkedin = ?,
+
+            languages = ?
+          WHERE id = ?
+          `,
+          [
+            logo || "",
+
+            imgLogoPath ||
+              current.imgLogo ||
+              "",
+
+            hotline || "",
+            email || "",
+            workingHours || "",
+
+            urlFacebook || "",
+            urlYoutube || "",
+            urlZalo || "",
+            urlTiktok || "",
+            urlIg || "",
+            urlLinkedin || "",
+
+            JSON.stringify(
+              languagesData || {}
+            ),
+
+            current.id,
+          ]
+        );
+      }
+
+      // ==============================
+      // INSERT
+      // ==============================
+      else {
+        await db.query(
+          `
+          INSERT INTO general_settings
+          (
+            logo,
+            imgLogo,
+
+            hotline,
+            email,
+            workingHours,
+
+            urlFacebook,
+            urlYoutube,
+            urlZalo,
+            urlTiktok,
+            urlIg,
+            urlLinkedin,
+
+            languages
+          )
+          VALUES
+          (
+            ?, ?, ?, ?, ?,
+            ?, ?, ?, ?, ?, ?,
+            ?
+          )
+          `,
+          [
+            logo || "",
+            imgLogoPath || "",
+
+            hotline || "",
+            email || "",
+            workingHours || "",
+
+            urlFacebook || "",
+            urlYoutube || "",
+            urlZalo || "",
+            urlTiktok || "",
+            urlIg || "",
+            urlLinkedin || "",
+
+            JSON.stringify(
+              languagesData || {}
+            ),
+          ]
+        );
+      }
+
+      return res.json({
+        success: true,
+        imgLogo: imgLogoPath,
+        message: "Lưu cài đặt thành công",
+      });
+    }
+
+    return res.status(400).json({
+      success: false,
+      message: "idFun không hợp lệ",
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 exports.bannerHome = [

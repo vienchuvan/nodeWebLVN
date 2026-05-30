@@ -1,7 +1,16 @@
 const express = require('express');
 const router = express.Router();
-
+const multer = require('multer');
 const homeController = require('../controller/homeController');
+
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024
+  }
+});
+
 
 // route home
 router.get('/', homeController.home);
@@ -12,7 +21,7 @@ router.get('/lang-menu', homeController.langMenu);
 router.post('/set-menu', homeController.setMenu);
 
 router.post('/set-banner', homeController.bannerHome);
-router.post('/setting-home', homeController.setGeneralSettings);
+router.post('/setting-home',  upload.single("imgLogo"), homeController.setGeneralSettings);
 
 
 router.post(
